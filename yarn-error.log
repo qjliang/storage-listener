@@ -1,0 +1,75 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn publish
+
+PATH: 
+  /usr/local/opt/ruby/bin:/usr/local/sbin:/usr/sbin:/usr/local/bin:/usr/local/Cellar/mongodb/3.0.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/steven/.yarn/bin:/Users/steven/.rvm/bin
+
+Yarn version: 
+  1.12.3
+
+Node version: 
+  10.14.2
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: http://registry.npm.taobao.org/-/user/token/undefined: [not_found] document not found
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:65894:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:129018:22)
+      at Request.emit (events.js:182:13)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:129990:10)
+      at Request.emit (events.js:182:13)
+      at Gunzip.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:129912:12)
+      at Object.onceWrapper (events.js:273:13)
+      at Gunzip.emit (events.js:187:15)
+      at endReadableNT (_stream_readable.js:1094:12)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+npm manifest: 
+  {
+    "name": "storage-listener",
+    "version": "1.0.4",
+    "description": "浏览器跨 tab 页通信。",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "yarn dev",
+      "dev": "tsc -w",
+      "build": "tsc",
+      "lint": "tslint -p tsconfig.json",
+      "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+      "release": "standard-version && git push --follow-tags origin master && yarn publish"
+    },
+    "files": [
+      "dist/"
+    ],
+    "keywords": [
+      "localstorage",
+      "notify"
+    ],
+    "author": "qinjiliang",
+    "license": "MIT",
+    "devDependencies": {
+      "@commitlint/cli": "^8.0.0",
+      "@commitlint/config-conventional": "^8.0.0",
+      "commitizen": "^3.1.1",
+      "husky": "^2.5.0",
+      "lint-staged": "^8.2.1",
+      "prettier": "^1.18.2",
+      "standard-version": "^6.0.1",
+      "tslint": "^5.18.0",
+      "tslint-config-prettier": "^1.18.0",
+      "typescript": "^3.5.3"
+    },
+    "publishConfig": {
+      "registry": "https://www.npmjs.com/package/"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
