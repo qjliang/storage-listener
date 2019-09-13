@@ -1,0 +1,26 @@
+{
+  "name": "storage-listener",
+  "version": "1.0.5",
+  "description": "浏览器不同页面实时通信",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "yarn dev",
+    "dev": "tsc -w",
+    "build": "tsc"
+  },
+  "files": [
+    "dist/"
+  ],
+  "keywords": [
+    "localstorage",
+    "notify"
+  ],
+  "author": "qinjiliang",
+  "license": "MIT",
+  "devDependencies": {
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.5.3"
+  }
+}
