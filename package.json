@@ -1,6 +1,6 @@
 {
   "name": "storage-listener",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "浏览器端消息通知",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
