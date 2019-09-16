@@ -1,27 +1,29 @@
-declare type storageListenerHandler = (data: any) => void;
+interface storageListenerHandler {
+    (data: any): void;
+}
 declare class AccrossStorageListener {
-    private messages;
+    private notifyMsg;
     constructor();
-    /**
-     * 监听 页面消息消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param handler 消息回调
-     */
-    on(msgName: string, handler: storageListenerHandler): void;
-    /**
-     * 发送 跨tab消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param data 携带的数据
-     */
-    emit(msgName: string, data?: any, self?: boolean): void;
-    remove(msgName: string, handler?: storageListenerHandler): void;
-    private emitHandlers;
+    private emitCallback;
     /**
      * 发送 页面消息消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param data json格式字符串，为了 让跨 tab 和 不跨 tab 的数据格式一致。
+     * @param infoName 消息名
+     * @param data json格式字符串，为了让跨页 和 不跨页 的数据格式一致。
      */
-    private send;
+    private action;
+    /**
+     * 监听 页面消息消息
+     * @param infoName 消息名
+     * @param cb 消息回调
+     */
+    on(infoName: string, cb: storageListenerHandler): void;
+    /**
+     * 发送 跨页消息
+     * @param infoName 消息名
+     * @param data 携带的数据
+     */
+    emit(infoName: string, data?: any, self?: boolean): void;
+    delete(infoName: string, cb?: storageListenerHandler): void;
 }
-declare const messager: AccrossStorageListener;
-export default messager;
+declare const notifyMessage: AccrossStorageListener;
+export default notifyMessage;

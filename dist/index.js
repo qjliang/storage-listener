@@ -1,94 +1,102 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var storageNamespace = 'storage-listener';
 var AccrossStorageListener = /** @class */ (function () {
     function AccrossStorageListener() {
         var _this = this;
-        // 在当前tab页，和不在当前tab页，消息不同。
-        this.messages = {};
+        // 在当前页，和不在当前页，消息不同。
+        this.notifyMsg = {};
         window.addEventListener('storage', function (event) {
             var eventScheme = event.key.split(':');
             var namespace = eventScheme[0];
             if (namespace === storageNamespace) {
                 var data = JSON.parse(JSON.parse(event.newValue).data);
                 var msgName = eventScheme[1];
-                _this.emitHandlers(msgName, data);
+                _this.emitCallback(msgName, data);
             }
         });
     }
-    /**
-     * 监听 页面消息消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param handler 消息回调
-     */
-    AccrossStorageListener.prototype.on = function (msgName, handler) {
-        var handlers = this.messages[msgName];
-        this.messages[msgName] = Array.isArray(handlers) ? handlers.concat([handler]) : [handler];
-    };
-    /**
-     * 发送 跨tab消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param data 携带的数据
-     */
-    AccrossStorageListener.prototype.emit = function (msgName, data, self) {
-        if (data === void 0) { data = ''; }
-        if (self === void 0) { self = false; }
-        this.send(msgName, JSON.stringify(data), self);
-    };
-    AccrossStorageListener.prototype.remove = function (msgName, handler) {
-        if (handler === undefined) {
-            // 删除所有
-            delete this.messages[msgName];
-        }
-        else {
-            var handlers = this.messages[msgName];
-            if (Array.isArray(handlers)) {
-                var index = handlers.indexOf(handler);
-                if (index === -1) {
-                    console.warn("\u6CA1\u6709\u76D1\u542C localStorage: [" + msgName + "], handler: [" + handler + "]");
-                }
-                else {
-                    handlers.splice(index, 1);
-                    if (handlers.length === 0) {
-                        delete this.messages[msgName];
-                    }
-                }
-            }
-            else {
-                console.warn("\u6CA1\u6709\u76D1\u542C localStorage: [" + msgName + "]");
-            }
-        }
-    };
-    AccrossStorageListener.prototype.emitHandlers = function (msgName, data) {
-        // 如果在当前 tab 监听了事件 则 this.messages 中会有相应的 handler
-        // 不在当前 tab 监听事件 则 this.messages 中不会有相应的 handler，但在其他 tab 页会有。
-        var handlers = this.messages[msgName];
-        if (Array.isArray(handlers)) {
-            for (var _i = 0, handlers_1 = handlers; _i < handlers_1.length; _i++) {
-                var handler = handlers_1[_i];
-                handler(data);
+    AccrossStorageListener.prototype.emitCallback = function (infoName, data) {
+        // 如果在当前 页 监听了事件 则 this.notifyMsg 中会有相应的 cb
+        // 不在当前 页 监听事件 则 this.notifyMsg 中不会有相应的 cb，但在其他 tab 页会有。
+        var cbs = this.notifyMsg[infoName];
+        if (Array.isArray(cbs)) {
+            for (var _i = 0, cbs_1 = cbs; _i < cbs_1.length; _i++) {
+                var cb = cbs_1[_i];
+                cb(data);
             }
         }
     };
     /**
      * 发送 页面消息消息
-     * @param msgName 消息名 不能包含 冒号(:)
-     * @param data json格式字符串，为了 让跨 tab 和 不跨 tab 的数据格式一致。
+     * @param infoName 消息名
+     * @param data json格式字符串，为了让跨页 和 不跨页 的数据格式一致。
      */
-    AccrossStorageListener.prototype.send = function (msgName, data, self) {
+    AccrossStorageListener.prototype.action = function (infoName, data, self) {
         if (self === void 0) { self = false; }
-        // 在当前 tab 页 不会触发 onstorage 事件
-        window.localStorage.setItem(storageNamespace + ":" + msgName, JSON.stringify({
+        // 在当前页不会触发 onstorage 事件
+        window.localStorage.setItem(storageNamespace + ":" + infoName, JSON.stringify({
             id: new Date().getTime() + "-" + Math.floor(Math.random() * 1000),
             data: data
         }));
-        // 如果在当前 tab 监听了事件 则 this.messages 中会有相应的 handler
+        // 如果在当前页监听了事件 则 this.notifyMsg 中会有相应的 cb
         // 在当前页面触发 事件。
         if (self) {
-            this.emitHandlers(msgName, data);
+            this.emitCallback(infoName, data);
+        }
+    };
+    /**
+     * 监听 页面消息消息
+     * @param infoName 消息名
+     * @param cb 消息回调
+     */
+    AccrossStorageListener.prototype.on = function (infoName, cb) {
+        var info = this.notifyMsg[infoName];
+        this.notifyMsg[infoName] = Array.isArray(info) ? __spreadArrays(info, [cb]) : [cb];
+    };
+    /**
+     * 发送 跨页消息
+     * @param infoName 消息名
+     * @param data 携带的数据
+     */
+    AccrossStorageListener.prototype.emit = function (infoName, data, self) {
+        if (data === void 0) { data = ''; }
+        if (self === void 0) { self = false; }
+        this.action(infoName, JSON.stringify(data), self);
+    };
+    AccrossStorageListener.prototype.delete = function (infoName, cb) {
+        if (cb === undefined) {
+            // 删除所有
+            // Reflect.deleteProperty(this.notifyMsg, infoName)
+            delete this.notifyMsg[infoName];
+        }
+        else {
+            var callbacks = this.notifyMsg[infoName];
+            if (Array.isArray(callbacks)) {
+                var index = callbacks.indexOf(cb);
+                if (index === -1) {
+                    console.warn("\u6CA1\u6709\u76D1\u542C localStorage: [" + infoName + "], handler: [" + cb + "]");
+                }
+                else {
+                    callbacks.splice(index, 1);
+                    if (callbacks.length === 0) {
+                        delete this.notifyMsg[infoName];
+                    }
+                }
+            }
+            else {
+                console.warn("\u6CA1\u6709\u76D1\u542C localStorage: [" + infoName + "]");
+            }
         }
     };
     return AccrossStorageListener;
 }());
-var messager = new AccrossStorageListener();
-exports.default = messager;
+var notifyMessage = new AccrossStorageListener();
+exports.default = notifyMessage;

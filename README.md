@@ -26,14 +26,14 @@ AcrossStorageListener.emit('event-name', {
 }, true)
 
 
-const handler = payload => {
+const cb = payload => {
   console.log(payload.data)  // 'message data'
 }
 // 在任意位置监听通知
-AcrossStorageListener.on('event-name', handler)
+AcrossStorageListener.on('event-name', cb)
 
 // 删除监听
-AcrossStorageListener.delete('event-name', handler)
+AcrossStorageListener.delete('event-name', cb)
 // or 全部删除
 AcrossStorageListener.delete('event-name')
 ```
